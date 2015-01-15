@@ -1,0 +1,36 @@
+From 090159cec92921182f8eeb59762ceba11c1581f4 Mon Sep 17 00:00:00 2001
+From: Marek Kasik <mkasik@redhat.com>
+Date: Wed, 18 Dec 2013 18:28:39 +0100
+Subject: [PATCH 2/2] gdkwindow: Don't add the same window to "update_windows"
+ twice
+
+This prevents passing of such window to another GMainLoop.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=711552
+---
+ gdk/gdkwindow.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/gdk/gdkwindow.c b/gdk/gdkwindow.c
+index 0f33fb0..153144a 100644
+--- a/gdk/gdkwindow.c
++++ b/gdk/gdkwindow.c
+@@ -5242,6 +5242,15 @@ gdk_window_add_update_window (GdkWindow *window)
+   GSList *prev = NULL;
+   gboolean has_ancestor_in_list = FALSE;
+ 
++  /*  Check whether "window" is already in "update_windows" list.
++   *  It could be added during execution of gtk_widget_destroy() when
++   *  setting focus widget to NULL and redrawing old focus widget.
++   *  See bug 711552.
++   */
++  tmp = g_slist_find (update_windows, window);
++  if (tmp != NULL)
++    return;
++
+   for (tmp = update_windows; tmp; tmp = tmp->next)
+     {
+       GdkWindowObject *parent = GDK_WINDOW_OBJECT (window)->parent;
+-- 
+1.8.4.2
+

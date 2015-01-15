@@ -1,0 +1,85 @@
+From c212cb8f32c02cf2fe691372b753d334f6e25d69 Mon Sep 17 00:00:00 2001
+From: Marek Kasik <mkasik@redhat.com>
+Date: Mon, 16 Dec 2013 18:04:14 +0100
+Subject: [PATCH 1/2] gdkwindow: Handle references in "update_windows" list
+ correctly
+
+Since update_windows list is a static variable in GdkWindow.c which
+contains pointers to windows which needs to be updated, it can happen
+that it contains a pointer to a window even after quit from a gtk_main().
+If another gtk_main() is called in the same process it tries to process
+windows in the list which leads to a crash.
+Correct reference count handling of added windows prevents such applications
+from crash.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=711552
+---
+ gdk/gdkwindow.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/gdk/gdkwindow.c b/gdk/gdkwindow.c
+index f5f0339..0f33fb0 100644
+--- a/gdk/gdkwindow.c
++++ b/gdk/gdkwindow.c
+@@ -5267,7 +5267,7 @@ gdk_window_add_update_window (GdkWindow *window)
+ 	      prev = tmp;
+ 	    }
+ 	  /* here, tmp got advanced past all lower stacked siblings */
+-	  tmp = g_slist_prepend (tmp, window);
++	  tmp = g_slist_prepend (tmp, g_object_ref (window));
+ 	  if (prev)
+ 	    prev->next = tmp;
+ 	  else
+@@ -5280,7 +5280,7 @@ gdk_window_add_update_window (GdkWindow *window)
+        */
+       if (has_ancestor_in_list && gdk_window_is_ancestor (tmp->data, window))
+ 	{
+-	  tmp = g_slist_prepend (tmp, window);
++	  tmp = g_slist_prepend (tmp, g_object_ref (window));
+ 
+ 	  if (prev)
+ 	    prev->next = tmp;
+@@ -5294,7 +5294,7 @@ gdk_window_add_update_window (GdkWindow *window)
+        */
+       if (! tmp->next && has_ancestor_in_list)
+ 	{
+-	  tmp = g_slist_append (tmp, window);
++	  tmp = g_slist_append (tmp, g_object_ref (window));
+ 	  return;
+ 	}
+ 
+@@ -5305,13 +5305,20 @@ gdk_window_add_update_window (GdkWindow *window)
+    *  hierarchy than what is already in the list) or the list is
+    *  empty, prepend
+    */
+-  update_windows = g_slist_prepend (update_windows, window);
++  update_windows = g_slist_prepend (update_windows, g_object_ref (window));
+ }
+ 
+ static void
+ gdk_window_remove_update_window (GdkWindow *window)
+ {
+-  update_windows = g_slist_remove (update_windows, window);
++  GSList *link;
++
++  link = g_slist_find (update_windows, window);
++  if (link != NULL)
++    {
++      update_windows = g_slist_delete_link (update_windows, link);
++      g_object_unref (window);
++    }
+ }
+ 
+ static gboolean
+@@ -5687,8 +5694,6 @@ gdk_window_process_all_updates (void)
+ 
+   _gdk_windowing_before_process_all_updates ();
+ 
+-  g_slist_foreach (old_update_windows, (GFunc)g_object_ref, NULL);
+-
+   while (tmp_list)
+     {
+       GdkWindowObject *private = (GdkWindowObject *)tmp_list->data;
+-- 
+1.8.4.2
+
