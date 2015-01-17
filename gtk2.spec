@@ -358,6 +358,12 @@ gtk-query-immodules-2.0-%{__isa_bits} --update-cache
 %doc tmpdocs/examples
 
 %changelog
+* Sat Jan 17 2015 Rajiv M Ranganath <rajiv.ranganath@atihita.com> 2.24.22-5.1
+- Adapt for AL/LL
+- Add package support URL
+- Update spec file
+- Import source package SL7/gtk2-2.24.22-5.el7_0.1
+
 * Mon Aug 18 2014 Marek Kasik <mkasik@redhat.com> - 2.24.22-5.el7_0.1
 - Propagate filename if directory was not specified
 - when printing to a file
