@@ -88,6 +88,9 @@ Requires(post): libtiff >= 3.6.1
 Requires: libXrandr >= %{xrandr_version}
 
 %description
+For package support, please visit
+https://github.com/lambda-linux-pkgs/%{name}/issues
+
 GTK+ is a multi-platform toolkit for creating graphical user
 interfaces. Offering a complete set of widgets, GTK+ is suitable for
 projects ranging from small one-off tools to complete application
@@ -101,6 +104,9 @@ Requires: gtk2 = %{version}-%{release}
 Requires: imsettings
 
 %description immodules
+For package support, please visit
+https://github.com/lambda-linux-pkgs/%{name}/issues
+
 The gtk2-immodules package contains standalone input methods that are shipped
 as part of GTK+.
 
@@ -110,6 +116,9 @@ Group: System Environment/Libraries
 Requires: gtk2 = %{version}-%{release}
 
 %description immodule-xim
+For package support, please visit
+https://github.com/lambda-linux-pkgs/%{name}/issues
+
 The gtk2-immodule-xim package contains XIM support for GTK+.
 
 %package devel
@@ -131,6 +140,9 @@ Provides: gail-devel = %{version}-%{release}
 Obsoletes: gail-devel < 2.13.0-1
 
 %description devel
+For package support, please visit
+https://github.com/lambda-linux-pkgs/%{name}/issues
+
 This package contains the libraries and header files that are needed
 for writing applications with the GTK+ widget toolkit. If you plan
 to develop applications with GTK+, consider installing the gtk2-devel-docs
@@ -143,6 +155,9 @@ Requires: gtk2 = %{version}-%{release}
 #BuildArch: noarch
 
 %description devel-docs
+For package support, please visit
+https://github.com/lambda-linux-pkgs/%{name}/issues
+
 This package contains developer documentation for the GTK+ widget toolkit.
 
 %prep
