@@ -2,7 +2,7 @@
 
 %define glib2_base_version 2.28.0
 %define glib2_version %{glib2_base_version}-1
-%define pango_base_version 1.20.0
+%define pango_base_version 1.34.1
 %define pango_version %{pango_base_version}-1
 %define atk_base_version 1.29.4
 %define atk_version %{atk_base_version}-2
