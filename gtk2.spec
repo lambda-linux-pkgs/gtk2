@@ -1,3 +1,5 @@
+%define _buildid .1
+
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
 %define glib2_base_version 2.28.0
@@ -18,7 +20,7 @@
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X
 Name: gtk2
 Version: 2.24.22
-Release: 5%{?dist}.1
+Release: 5%{?_buildid}%{?dist}.1
 License: LGPLv2+
 Group: System Environment/Libraries
 URL: http://www.gtk.org
